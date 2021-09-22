@@ -12,6 +12,7 @@ struct lfu
     int data;
     int index;
     int freq;
+    int order;
 };
 struct node* head=NULL;
 struct node* ptr;
@@ -235,7 +236,14 @@ int getLeastIndex(struct lfu frame[],int f)
 
         if(frame[i].freq<frame[min].freq)
         {
-            min=i;
+        	min=i; 
+        }
+        else if(frame[i].freq=frame[min].freq)
+        {
+        	if(frame[i].order<frame[min].order)
+        	{
+        		min=i;
+        	}       
         }
         i++;
     }
@@ -268,6 +276,7 @@ int leastFrequentlyUsed(int ref[],int n,int f)
         frame[i]=-1;
         fList[i].index=-1;
         fList[i].freq=0;
+        fList[i].order=0;
         fList[i].data=-1;
     }
     count=0;
@@ -282,6 +291,7 @@ int leastFrequentlyUsed(int ref[],int n,int f)
                 fList[k].data=ref[i];
                 fList[k].index=i;
                 fList[k].freq+=1;
+                fList[k].order=i;
                 printframe(frame,f);
                 k++;
                 count++;
@@ -297,21 +307,35 @@ int leastFrequentlyUsed(int ref[],int n,int f)
         {
             int isPresent=search(f,ref[i],frame);
             int least=getLeastIndex(fList,f);
+            //printf("\n least %d\n",least);
             if(isPresent==0)
             {
-                frame[fList[least].index]=ref[i];
-                fList[least].data=ref[i];
-                fList[least].freq=0;
-                //printf("least %d",least);
-
-                printframe(frame,f);
-                count++;
+		frame[fList[least].index]=ref[i];
+		fList[least].data=ref[i];
+		fList[least].freq=1;
+		fList[least].order=i;
+		int flag=0;
+		int i=0;
+		while(flag!=1&&i<f)
+		{
+			if(fList[i].data!=-1)
+			{
+		   		printf("%d ",fList[i].data);
+			}
+			else
+			{
+		    		flag=1;
+			}
+			i++;
+		}
+		printf("\n");
+               count++;
             }
             else
             {
                 int position=getIndex(fList,f,ref[i]);
-                //printf("position %d",position);
                 fList[position].freq+=1;
+                //printf("\n frequency of flist[position] %d\n",fList[position].freq);
             }
         }
         i++;
